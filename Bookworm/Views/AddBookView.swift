@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+//import UIKit
 
 struct AddBookView: View {
     @Environment(\.managedObjectContext) var moc
@@ -13,11 +14,13 @@ struct AddBookView: View {
 
     @State private var title = ""
     @State private var author = ""
-    @State private var rating = 3
+    @State private var rating = 1
     @State private var genre = ""
     @State private var review = ""
+    @State private var date = Date()
+    @State private var showingAlert = false
 
-    let genres = ["Fantasy", "Horror", "Kids", "Mystory", "Poetry", "Romance", "Thriller"]
+    let genres = ["Fantasy", "Horror", "Kids", "Mystory", "Poetry", "Romance", "Thriller", "Unknown"]
 
     var body: some View {
         NavigationView{
@@ -29,6 +32,9 @@ struct AddBookView: View {
                         ForEach(genres, id: \.self) {
                             Text($0)
                         }
+                    }
+                    DatePicker(selection: $date, in: ...Date(), displayedComponents: .date) {
+                        Text("Select a date")
                     }
                 }
                 Section {
@@ -42,11 +48,13 @@ struct AddBookView: View {
                     Button("Save"){
                         let newBook = Book(context: moc)
                         newBook.id = UUID()
-                        newBook.title = title
-                        newBook.author = author
+                        newBook.title = (title == "") ? "unknown" : title
+                        newBook.author = (author == "") ? "unknown" : author
                         newBook.rating = Int16(rating)
-                        newBook.genre = genre
-                        newBook.review = review
+                        newBook.genre = (genre == "") ? "Unknown" : genre
+                        newBook.review = (review == "") ? "No review yet" : review
+                        newBook.date = date
+
 
                         try? moc.save()
                         dismiss()
